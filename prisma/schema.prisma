@@ -22,6 +22,8 @@ model User {
   timezone           String   @default("UTC")
   googleRefreshToken String?  @map("google_refresh_token")
   createdAt          DateTime @default(now()) @map("created_at")
+  tags String[] @default([])
+  description        String?
 
   availabilityAsUser   Availability[] @relation("UserAvailability")
   availabilityAsMentor Availability[] @relation("MentorAvailability")

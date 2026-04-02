@@ -1,9 +1,13 @@
 import { Router } from "express";
-import { listMeetings, deleteMeeting } from "../controllers/meetingController.js";
+import { createMeeting } from "../controllers/meetingController.js";
 import { authenticate, requireRole } from "../middleware/auth.js";
 
 export const meetingRoutes = Router();
 
-meetingRoutes.use(authenticate);
-meetingRoutes.get("/", listMeetings);
-meetingRoutes.delete("/:id", requireRole("ADMIN"), deleteMeeting);
+// ✅ ONLY CREATE (for now)
+meetingRoutes.post(
+  "/",
+  authenticate,
+  requireRole("ADMIN"),
+  createMeeting
+);

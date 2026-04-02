@@ -1,23 +1,80 @@
-import { prisma } from "../lib/prisma.js";
 
-export async function listMeetings(req, res, next) {
+
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export const createMeeting = async (req, res) => {
   try {
-    const { adminId, from, to } = req.query;
-    const where = {};
-    if (adminId) where.adminId = adminId;
-    if (from) where.startTime = { ...where.startTime, gte: new Date(from) };
-    if (to) where.endTime = { ...where.endTime, lte: new Date(to) };
+    console.log("REQ.USER 👉", req.user); // ✅ DEBUG
 
-    const meetings = await prisma.meeting.findMany({
-      where,
-      include: { participants: true },
-      orderBy: { startTime: "asc" },
+    const { title, startTime, endTime, participants } = req.body;
+
+    // ✅ VALIDATION
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        message: "Unauthorized: user missing",
+      });
+    }
+
+    if (!participants || participants.length < 2) {
+      return res.status(400).json({
+        message: "Participants required",
+      });
+    }
+
+    // ✅ CREATE MEETING
+    const meeting = await prisma.meeting.create({
+      data: {
+        title,
+        startTime: new Date(startTime),
+        endTime: new Date(endTime),
+        adminId: req.user.id,
+
+        participants: {
+          create: participants.map((email) => ({
+            email,
+          })),
+        },
+      },
+      include: {
+        participants: true,
+      },
     });
-    res.json(meetings);
-  } catch (e) {
-    next(e);
+
+    res.json({
+      message: "Meeting created successfully",
+      data: meeting,
+    });
+  } catch (err) {
+    console.error("❌ MEETING ERROR:", err);
+
+    res.status(500).json({
+      message: err.message || "Meeting creation failed",
+    });
   }
-}
+};
+
+export const getMyMeetings = async (req, res) => {
+  try {
+    const meetings = await prisma.meeting.findMany({
+      where: {
+        adminId: req.user.userId,
+      },
+      include: {
+        participants: true,
+      },
+      orderBy: {
+        startTime: "asc",
+      },
+    });
+
+    res.json({ data: meetings });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch meetings" });
+  }
+};
 
 export const deleteMeeting = async (req, res) => {
   try {
@@ -27,15 +84,9 @@ export const deleteMeeting = async (req, res) => {
       where: { id },
     });
 
-    res.status(200).json({
-      success: true,
-      message: "Meeting deleted successfully",
-    });
-  } catch (error) {
-    console.error("Delete meeting error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete meeting",
-    });
+    res.json({ message: "Meeting deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Delete failed" });
   }
 };

@@ -7,12 +7,15 @@ import {
   getOverlappingSlots,
   scheduleMeeting,
 } from "../controllers/adminController.js";
+
 import { authenticate, requireRole } from "../middleware/auth.js";
 
 export const adminRoutes = Router();
 
 adminRoutes.use(authenticate);
-adminRoutes.use(requireRole("ADMIN"));
+
+// ✅ FIX: lowercase
+adminRoutes.use(requireRole("admin"));
 
 adminRoutes.get("/users", listUsers);
 adminRoutes.get("/mentors", listMentors);
