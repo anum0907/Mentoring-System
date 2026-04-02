@@ -1,16 +1,59 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 🎯 Mentoring Call Scheduling System
 
-Currently, two official plugins are available:
+A full-stack mentoring platform designed to streamline scheduling between users and mentors, with a strong focus on **product thinking, RBAC, and intelligent matching**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🚀 Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This system enables:
 
-## Expanding the ESLint configuration
+- Users to add availability
+- Mentors to manage availability
+- Admins to control scheduling, recommend mentors, and book calls
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Inspired by platforms like **Cal.com** and **Acuity Scheduling**, the goal was to build a simple, intuitive, and scalable scheduling workflow.
+
+---
+
+## 🔐 Role-Based Access Control (RBAC)
+
+### 👤 User
+- Add availability
+- Define tags & description
+- ❌ Cannot book meetings
+
+### 🧑‍🏫 Mentor
+- Add availability
+- Maintain profile (tags & description)
+- ❌ Cannot book meetings
+
+### 🛠 Admin
+- View all users & mentors
+- Get mentor recommendations
+- Check availability overlaps
+- Book meetings
+
+---
+
+## 🧠 Mentor Recommendation System
+
+A lightweight recommendation engine based on:
+
+- Tag matching
+- Description similarity (vectorless approach)
+
+### ⚙️ Matching Logic
+- Each matching tag increases score
+- Mentors are ranked by match score
+- Best match is highlighted in UI
+
+---
+
+## ⏱ Availability Overlap System
+
+The system calculates overlapping slots between users and mentors using:
+
+- Date matching
+- Time intersection logic:
